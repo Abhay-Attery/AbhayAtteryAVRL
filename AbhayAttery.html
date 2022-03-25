@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abhay Attery</title>
+</head>
+<style>
+    body{
+    margin-top: 5rem;
+}
+
+#circle1 {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    border-radius: 50px;
+    background-color: red;
+    top: 50px; left: 500px;
+}
+
+#circle2 {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    border-radius: 50px;
+    background-color: yellow;
+    top: 50px; left: 700px;
+}
+
+#circle3 {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    border-radius: 50px;
+    background-color: darkgreen;
+    top: 250px; left: 500px;
+}
+
+#circle4 {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    border-radius: 50px;
+    background-color: skyblue;
+    top: 250px; left: 700px;
+
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+#startbtn {
+    cursor: pointer;
+    color: honeydew;
+    background-color: #008656;
+    border: 10px, black;
+    padding: 5px 35px;
+    position: absolute;
+    left: 500px;
+    top: 350px;
+}
+
+#stopbtn {
+    cursor: pointer;
+    color: honeydew;
+    background-color: #008656;
+    border: 10px, black;
+    padding: 5px 35px;
+    margin-left: 165px;
+    position: absolute;
+    left: 500px;
+    top: 350px;
+}
+</style>
+<body>
+        <div id="circle1"></div>
+        <div id="circle2"></div>
+        <div id="circle3"></div>
+        <div id="circle4"></div>
+    <div class="buttons">
+        <button id="startbtn">Start</button>
+        <button id="stopbtn">Stop</button>
+    </div>
+</body>
+<script>
+    var interval;
+
+//movement parameters
+let min_expansion=75;
+let max_expansion=275;
+let increment = 2;
+
+//color parameters
+let colorTransition = [[255,0,0],
+                        [255,255,0],
+                        [135,206,235],
+                        [0, 100,0]];
+
+//circle specific color parameters
+let circle1ColorIndex = 0;
+let circle1Interval=-1;
+
+let circle2ColorIndex = 1;
+let circle2Interval=-1;
+
+let circle3ColorIndex = 2;
+let circle3Interval=-1;
+
+let circle4ColorIndex = 3;
+let circle4Interval=-1;
+
+let colorTransitionTotalInterval=max_expansion/(increment*2);
+
+//circle specific measurements
+let widthCircle1=min_expansion;
+let dirCircle1 = "right";
+
+let heightCircle2=min_expansion;
+let dirCircle2 = "down";
+
+let heightCircle3=min_expansion;
+let dirCircle3 = "up";
+let c3posx=500;
+let c3posy=250;
+
+let widthCircle4=min_expansion;
+let dirCircle4 = "left";
+let c4posx=700;
+let c4posy=250;
+
+function getRgb(r,g,b) {
+    return "rgb("+r+","+g+","+b+")";
+}
+
+function getSmoothTransition(index, totalIntervals, currentInterval){
+    let startColor = colorTransition[index];
+    let endColor = colorTransition[(index+1)%4];
+    let r = startColor[0] + (1+currentInterval)*(endColor[0]-startColor[0])/totalIntervals;
+    let g = startColor[1] + (1+currentInterval)*(endColor[1]-startColor[1])/totalIntervals;
+    let b = startColor[2] + (1+currentInterval)*(endColor[2]-startColor[2])/totalIntervals;
+    return getRgb(r,g,b);
+}
+
+function animate() {
+    //circle1 //255,0,0 -> 255,255,0
+    circle1.style.background = getSmoothTransition(circle1ColorIndex, colorTransitionTotalInterval, circle1Interval);
+    circle1.style.width = widthCircle1+"px";
+    if(dirCircle1=="right"){
+        widthCircle1 += increment;
+        if(widthCircle1>=max_expansion)
+            dirCircle1 = "left";
+        if(circle1Interval<colorTransitionTotalInterval){
+            circle1Interval +=1;
+        }
+    }
+    else{//dir = left
+        widthCircle1-=increment;
+        if(widthCircle1<=min_expansion){
+            dirCircle1 = "right";
+            circle1ColorIndex = (circle1ColorIndex+1)%4;
+            circle1Interval=-1;
+        }
+    }
+
+    //circle2
+    circle2.style.background = getSmoothTransition(circle2ColorIndex, colorTransitionTotalInterval, circle2Interval);
+    circle2.style.height = heightCircle2+"px";
+    if(dirCircle2=="down"){
+        heightCircle2 += increment;
+        if(heightCircle2>=max_expansion)
+            dirCircle2 = "up";
+        if(circle2Interval<colorTransitionTotalInterval){
+            circle2Interval +=1;
+        }
+    }
+    else{//dir = up
+        heightCircle2-=increment;
+        if(heightCircle2<=min_expansion){
+            dirCircle2 = "down";
+            circle2ColorIndex = (circle2ColorIndex+1)%4;
+            circle2Interval=-1;
+        }
+    }    
+
+    //circle3
+    circle3.style.background = getSmoothTransition(circle3ColorIndex, colorTransitionTotalInterval, circle3Interval);
+    circle3.style.height = heightCircle3+"px";
+    if(dirCircle3=="up"){
+        heightCircle3 += increment;
+        if(heightCircle3>=max_expansion)
+            dirCircle3 = "down";
+        if(circle3Interval<colorTransitionTotalInterval){
+            circle3Interval +=1;
+        }
+        c3posy-=increment;
+    }
+    else{//dir = down
+        heightCircle3-=increment;
+        if(heightCircle3<=min_expansion){
+            dirCircle3 = "up";
+            circle3ColorIndex = (circle3ColorIndex+1)%4;
+            circle3Interval=-1;
+        }
+        c3posy+=increment;
+    }    
+    circle3.style.top = c3posy+"px";
+    circle3.style.left = c3posx+"px";
+    
+
+    //circle4
+    circle4.style.background = getSmoothTransition(circle4ColorIndex, colorTransitionTotalInterval, circle4Interval);
+    circle4.style.width = widthCircle4+"px";
+    if(dirCircle4=="left"){
+        widthCircle4 += increment;
+        if(widthCircle4>=max_expansion)
+            dirCircle4 = "right";
+        if(circle4Interval<colorTransitionTotalInterval){
+            circle4Interval +=1;
+        }
+        c4posx-=increment;
+    }
+    else{//dir = right
+        widthCircle4-=increment;
+        if(widthCircle4<=min_expansion){
+            dirCircle4 = "left";
+            circle4ColorIndex = (circle4ColorIndex+1)%4;
+            circle4Interval=-1;
+        }
+        c4posx+=increment;
+    }       
+    circle4.style.top = c4posy+"px";
+    circle4.style.left = c4posx+"px";
+
+    
+}
+
+document.getElementById("startbtn").onclick = function() {
+    interval = setInterval(animate, 10);
+};
+document.getElementById("stopbtn").onclick = function() {
+    clearInterval(interval);
+};
+
+</script>
+</html>
